@@ -1,5 +1,11 @@
+#Importando a biblioteca para a criação e tratamento dos dados.
 import pandas as pd
 
+###
+# Função para buscar os pacientes por municípios e exibir ao usuário a contagem geral de
+# internações a média de idade dos pacientes por gênero e média
+# de idade geral de todos os pacientes dos municípios escolhidos.
+# ###
 def search_patient():
     choose_district = str(input('Digite o nome do Município para pesquisa: ')).upper()
     try:
@@ -11,6 +17,10 @@ def search_patient():
     except ValueError:
         print('Município não encontrado')
 
+###
+# Função para buscar os hospitais e exibir ao usuário todos os pacientes que estiveram internados em
+#  determinado hospital, a idade, o município residencial e o solicitante.
+# ###
 def search_hospital():
     choose_hospital = str(input('Digite o nome do hospital para pesquisa: ')).upper()
     try:
@@ -22,7 +32,10 @@ def search_hospital():
     except IndexError:
         raise LookupError('Hospital não encontrado')
 
-#HOSPITAL SAO LUCAS DA PUCRS
+###
+# Função para buscar a lista de pacientes, nome do hospital executante e a quantidade de dias que cada
+# paciente esteve internado.
+# ###
 def calculate_time_hospitalization():
     choose_hospital = str(input('Digite o nome do Hospital para pesquisa: ')).upper()
     hospitalization_period = df_gerint_poa.query('executante in @choose_hospital')
@@ -30,10 +43,16 @@ def calculate_time_hospitalization():
     search_result = hospitalization_period.loc[0:, ['id_usuario', 'executante', 'solicitante', 'dias_internacao']]
     print(f'Abaixo o período de dias ques os pacientes estiveram internados:\n{search_result}')
 
+###
+# Função para exibir ao usuário os cinco casos com maior tempo de espera.
+# ###
 def search_longer_waitlist_time():
     waitlist = df_gerint_poa.sort_values(by='horas_na_fila', ascending=False).head(5)
     print(f'Os cinco casos com maiores tempos de espera na fila foram:\n{waitlist}')
 
+###
+# Função com a definição do menu de opções, cada opção chama sua respectiva função.
+# ###
 def menu():
     while True:
         print('Menu de opções.\n'
@@ -63,9 +82,12 @@ def menu():
 
 
 if __name__ == '__main__':
+    #Leitura do arquivo .csv com os dados
     df_gerint_poa = pd.read_csv("gerint_solicitacoes_mod.csv", sep=';')
+    #Alterando o tipo das colunas para datetime
     df_gerint_poa['data_internacao'] = pd.to_datetime(df_gerint_poa['data_internacao'])
     df_gerint_poa['data_autorizacao'] = pd.to_datetime(df_gerint_poa['data_autorizacao'])
     df_gerint_poa['data_alta'] = pd.to_datetime(df_gerint_poa['data_alta'])
 
+    #Chamando o menu
     menu()
