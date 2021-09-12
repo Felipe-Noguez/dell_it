@@ -22,16 +22,17 @@ def buscar_hospitais():
     except IndexError:
         raise LookupError('Hospital não encontrado')
 
+#HOSPITAL SAO LUCAS DA PUCRS
 def calcular_tempo_internacao():
     escolha_municipio = str(input('Digite o nome do Hospital para pesquisa: ')).upper()
     periodo_internacao = df_gerint_poa.query('executante in @escolha_municipio')
-    res = periodo_internacao['data_alta'] - periodo_internacao['data_internacao']
-    print(f'O período de dias que os pacientes do {escolha_municipio}, {periodo_internacao["executante"]} ficaram internados foi de: {res}')
-    #print(res)
+    periodo_internacao['dias_internacao'] = periodo_internacao['data_alta'] - periodo_internacao['data_internacao']
+    resultado_busca = periodo_internacao.loc[0:, ['id_usuario', 'executante', 'solicitante', 'dias_internacao']]
+    print(f'Abaixo o período de dias ques os pacientes estiveram internados:\n{resultado_busca}')
 
 def buscar_maior_tempo_fila():
-    res = df_gerint_poa.sort_values(by='horas_na_fila', ascending=False).head(5)
-    print(f'{res}')
+    fila_espera = df_gerint_poa.sort_values(by='horas_na_fila', ascending=False).head(5)
+    print(f'Os cinco casos com maiores tempos de espera na fila foram:\n{fila_espera}')
 
 def menu():
     while True:
