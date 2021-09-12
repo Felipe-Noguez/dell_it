@@ -1,43 +1,44 @@
 import pandas as pd
 
-def buscar_pacientes():
-    escolha_municipio = str(input('Digite o nome do Município para pesquisa: ')).upper()
+def search_patient():
+    choose_district = str(input('Digite o nome do Município para pesquisa: ')).upper()
     try:
-        total_casos = df_gerint_poa.query('municipio_residencia in @escolha_municipio')
-        print(f'Total de casos do município {escolha_municipio}, é {total_casos.municipio_residencia.count()}')
-        print(f'A média de idade dos pacientes do município de {escolha_municipio}, é {total_casos.idade.mean():.2f}.')
-        media_idade_genero = total_casos.groupby(by='sexo').size()
-        print(f'A média de idade dos pacientes do município de {escolha_municipio}, por {media_idade_genero}')
+        total_cases = df_gerint_poa.query('municipio_residencia in @choose_district')
+        print(f'Total de casos do município {choose_district}, é {total_cases.municipio_residencia.count()}')
+        print(f'A média de idade dos pacientes do município de {choose_district}, é {total_cases.idade.mean():.2f}.')
+        avarage_age_genre = total_cases.groupby(by='sexo').size()
+        print(f'A média de idade dos pacientes do município de {choose_district}, por {avarage_age_genre}')
     except ValueError:
         print('Município não encontrado')
 
-def buscar_hospitais():
-    escolha_hospital = str(input('Digite o nome do hospital para pesquisa: ')).upper()
+def search_hospital():
+    choose_hospital = str(input('Digite o nome do hospital para pesquisa: ')).upper()
     try:
-        total_casos_executante = df_gerint_poa.query('executante in @escolha_hospital')
-        total_casos_executante = total_casos_executante.loc[0:,
+        total_cases_hospital = df_gerint_poa.query('executante in @choose_hospital')
+        total_cases_hospital = total_cases_hospital.loc[0:,
                                  ['executante', 'idade', 'municipio_residencia', 'solicitante', 'data_autorizacao',
                                   'data_internacao', 'data_alta']]
-        print(f'{total_casos_executante}')
+        print(f'{total_cases_hospital}')
     except IndexError:
         raise LookupError('Hospital não encontrado')
 
-def calcular_tempo_internacao():
-    escolha_municipio = str(input('Digite o nome do Hospital para pesquisa: ')).upper()
-    periodo_internacao = df_gerint_poa.query('executante in @escolha_municipio')
-    res = periodo_internacao['data_alta'] - periodo_internacao['data_internacao']
-    print(f'O período de dias que os pacientes do {escolha_municipio}, {periodo_internacao["executante"]} ficaram internados foi de: {res}')
-    #print(res)
+#HOSPITAL SAO LUCAS DA PUCRS
+def calculate_time_hospitalization():
+    choose_hospital = str(input('Digite o nome do Hospital para pesquisa: ')).upper()
+    hospitalization_period = df_gerint_poa.query('executante in @choose_hospital')
+    hospitalization_period['dias_internacao'] = hospitalization_period['data_alta'] - hospitalization_period['data_internacao']
+    search_result = hospitalization_period.loc[0:, ['id_usuario', 'executante', 'solicitante', 'dias_internacao']]
+    print(f'Abaixo o período de dias ques os pacientes estiveram internados:\n{search_result}')
 
-def buscar_maior_tempo_fila():
-    res = df_gerint_poa.sort_values(by='horas_na_fila', ascending=False).head(5)
-    print(f'{res}')
+def search_longer_waitlist_time():
+    waitlist = df_gerint_poa.sort_values(by='horas_na_fila', ascending=False).head(5)
+    print(f'Os cinco casos com maiores tempos de espera na fila foram:\n{waitlist}')
 
 def menu():
     while True:
         print('Menu de opções.\n'
               '1 - Pesquisar pacientes por município.\n'
-              '2 - Consultar intercações ano por município.\n'
+              '2 - Consultar internações ano por município.\n'
               '3 - Consultar Hospitais.\n'
               '4 - Consultar tempo de internação\n'
               '5 - Consultar tempo de espera na fila\n'
@@ -45,13 +46,15 @@ def menu():
 
         opt = int(input('Selecione a opção desejada: '))
         if opt == 1:
-            buscar_pacientes()
+            search_patient()
+        elif opt == 2:
+            print('Em construção!')
         elif opt == 3:
-            buscar_hospitais()
+            search_hospital()
         elif opt == 4:
-            calcular_tempo_internacao()
+            calculate_time_hospitalization()
         elif opt == 5:
-            buscar_maior_tempo_fila()
+            search_longer_waitlist_time()
         elif opt == 6:
             print('Encerrando. . .')
             break
